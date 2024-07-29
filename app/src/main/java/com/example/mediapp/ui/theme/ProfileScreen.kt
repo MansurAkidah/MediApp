@@ -13,16 +13,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.widget.ConstraintLayout
+
 import com.example.mediapp.BottomMenuContent
 import com.example.mediapp.Feature
 import com.example.mediapp.R
 
+@Preview
 @Composable
 fun ProfileScreen() {
     Box(modifier = Modifier
@@ -30,9 +35,10 @@ fun ProfileScreen() {
         .fillMaxSize()
     ){
         Column {
-            IntroSection()
-            HeadSection()
+            //IntroSection()
+            //HeadSection()
             //FeatureSection()
+            profile()
         }
         BottomMenu(items = listOf(
             BottomMenuContent("Home", R.drawable.ic_home),
@@ -153,3 +159,7 @@ fun HeadSection(
     }
 //}
 
+@Composable
+fun profile(){
+
+}

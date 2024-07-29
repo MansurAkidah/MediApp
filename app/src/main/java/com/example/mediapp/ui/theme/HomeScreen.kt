@@ -1,10 +1,11 @@
 package com.example.mediapp.ui.theme
 
+import android.media.MediaPlayer
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,18 +21,23 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.mediapp.BottomMenuContent
 import com.example.mediapp.Feature
 //import com.example.mediapp.BottomMenuContent
@@ -40,9 +46,16 @@ import com.example.mediapp.R
 import com.example.mediapp.standardQuadFromTo
 //import com.example.mediapp.standardQuadFromTo
 import com.example.mediapp.ui.theme.*
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.RawResourceDataSource
+import com.google.android.exoplayer2.util.Log
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController) {
     Box(modifier = Modifier
         .background(DeepBlue)
         .fillMaxSize()
@@ -80,7 +93,15 @@ fun HomeScreen() {
                     Beige2,
                     Beige3
                 )
-            ))
+            ),
+                onFeatureClick = { feature ->
+                    if (feature.title == "Tips for sleeping") {
+                        val rawResourceId = R.raw.wrath
+                        val rawResourceUri = RawResourceDataSource.buildRawResourceUri(rawResourceId)
+                        Log.d("HomeScreen", "Navigating to video URI: $rawResourceUri")
+                        navController.navigate("video/${Uri.encode(rawResourceUri.toString())}")
+                    }
+                })
         }
         BottomMenu(items = listOf(
             BottomMenuContent("Home", R.drawable.ic_home),
@@ -229,6 +250,9 @@ fun ChipSection(
 fun CurrentMeditation(
     color: Color = LightRed
 ) {
+    val context = LocalContext.current
+    var isPlaying by remember { mutableStateOf(false) }
+    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.haha) }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -257,20 +281,34 @@ fun CurrentMeditation(
                 .clip(CircleShape)
                 .background(ButtonBlue)
                 .padding(10.dp)
+                .clickable {
+                    if (isPlaying) {
+                        mediaPlayer.pause()
+                        mediaPlayer.seekTo(0)
+                    } else {
+                        mediaPlayer.start()
+                    }
+                    isPlaying = !isPlaying
+                }
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_play),
-                contentDescription = "Play",
+                painter = painterResource(id = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play),
+                contentDescription = if (isPlaying) "Pause" else "Play",
                 tint = Color.White,
                 modifier = Modifier.size(16.dp)
             )
+        }
+    }
+    LaunchedEffect(mediaPlayer) {
+        mediaPlayer.setOnCompletionListener {
+            isPlaying = false
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)//because its experimental, the LazyVerticalGrid
 @Composable
-fun FeatureSection(features : List<Feature>) {
+fun FeatureSection(features : List<Feature>, onFeatureClick: (Feature) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "Features",
@@ -283,19 +321,20 @@ fun FeatureSection(features : List<Feature>) {
             modifier = Modifier.fillMaxHeight()
         ){
             items(features.size) {
-                FeatureItem(feature = features[it])
+                FeatureItem(feature = features[it], onFeatureClick = onFeatureClick)
             }
         }
     }
 }
 
 @Composable
-fun FeatureItem(feature: Feature) {
+fun FeatureItem(feature: Feature, onFeatureClick: (Feature) -> Unit) {
     BoxWithConstraints(modifier = Modifier
         .padding(7.dp)
         .aspectRatio(1f)
         .clip(RoundedCornerShape(10.dp))
         .background(feature.darkColor)
+        .clickable { onFeatureClick(feature) }
     ) {
         val width = constraints.maxWidth
         val height = constraints.maxHeight
@@ -378,6 +417,40 @@ fun FeatureItem(feature: Feature) {
                     .background(ButtonBlue)
                     .padding(vertical = 6.dp, horizontal = 15.dp)
             )
+        }
+    }
+}
+@Composable
+fun VideoPlayer(uriString: String) {
+    val context = LocalContext.current
+    val uri = Uri.parse(uriString)
+
+    AndroidView(factory = {
+        PlayerView(context).apply {
+            player = SimpleExoPlayer.Builder(context).build().apply {
+                setMediaItem(MediaItem.fromUri(uri))
+                prepare()
+                playWhenReady = true
+            }
+        }
+    }, update = {
+        it.player?.apply {
+            setMediaItem(MediaItem.fromUri(uri))
+            prepare()
+            playWhenReady = true
+        }
+    })
+}
+@Composable
+fun AppNavigation(navController: NavHostController) {
+    NavHost(navController, startDestination = "home") {
+        composable("home") { HomeScreen(navController) }
+        composable(
+            "video/{uri}",
+            arguments = listOf(navArgument("uri") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val uri = backStackEntry.arguments?.getString("uri") ?: ""
+            VideoPlayer(uriString = uri)
         }
     }
 }
