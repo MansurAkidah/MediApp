@@ -7,11 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.example.mediapp.BottomMenuContent
 import com.example.mediapp.R
 
 @Composable
-fun MusicScreen() {
+fun MusicScreen(navController: NavController) {
     Box(modifier = Modifier
         .background(DeepBlue)
         .fillMaxSize()
@@ -25,6 +26,7 @@ fun MusicScreen() {
             BottomMenuContent("Sleep", R.drawable.ic_moon),
             BottomMenuContent("Music", R.drawable.ic_music),
             BottomMenuContent("Profile", R.drawable.ic_profile),
-        ), modifier = Modifier.align(Alignment.BottomCenter))
+        ), modifier = Modifier.align(Alignment.BottomCenter),
+            onItemClick = { screen -> navController.navigate(screen.route)})
     }
 }

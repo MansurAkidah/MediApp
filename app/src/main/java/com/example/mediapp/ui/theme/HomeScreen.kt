@@ -1,5 +1,6 @@
 package com.example.mediapp.ui.theme
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -21,8 +22,10 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -32,18 +35,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.ActivityNavigator
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mediapp.BottomMenuContent
-import com.example.mediapp.Feature
+import com.example.mediapp.*
+import com.example.mediapp.R
 //import com.example.mediapp.BottomMenuContent
 //import com.example.mediapp.Feature
-import com.example.mediapp.R
-import com.example.mediapp.standardQuadFromTo
 //import com.example.mediapp.standardQuadFromTo
 import com.example.mediapp.ui.theme.*
 import com.google.android.exoplayer2.ExoPlayer
@@ -56,6 +58,10 @@ import com.google.android.exoplayer2.util.Log
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
+    val context = LocalContext.current
+    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.medi) }
+    var isPlaying by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier
         .background(DeepBlue)
         .fillMaxSize()
@@ -73,7 +79,7 @@ fun HomeScreen(navController: NavHostController) {
                     BlueViolet3
                 ),
                 Feature(
-                    title = "Tips for sleeping",
+                    title = "Tips for beginners",
                     R.drawable.ic_videocam,
                     LightGreen1,
                     LightGreen2,
@@ -95,11 +101,29 @@ fun HomeScreen(navController: NavHostController) {
                 )
             ),
                 onFeatureClick = { feature ->
-                    if (feature.title == "Tips for sleeping") {
-                        val rawResourceId = R.raw.wrath
+                    if (feature.title == "Tips for beginners") {
+                        val rawResourceId = R.raw.medd
                         val rawResourceUri = RawResourceDataSource.buildRawResourceUri(rawResourceId)
                         Log.d("HomeScreen", "Navigating to video URI: $rawResourceUri")
                         navController.navigate("video/${Uri.encode(rawResourceUri.toString())}")
+                    }
+                    if (feature.title == "Sleep meditation") {
+                        if (isPlaying) {
+                            mediaPlayer.pause()
+                            mediaPlayer.seekTo(0)
+                        } else {
+                            mediaPlayer.start()
+                        }
+                        isPlaying = !isPlaying
+                    }
+                    if (feature.title == "Calming sounds") {
+                        if (isPlaying) {
+                            mediaPlayer.pause()
+                            mediaPlayer.seekTo(0)
+                        } else {
+                            mediaPlayer.start()
+                        }
+                        isPlaying = !isPlaying
                     }
                 })
         }
@@ -109,7 +133,9 @@ fun HomeScreen(navController: NavHostController) {
             BottomMenuContent("Sleep", R.drawable.ic_moon),
             BottomMenuContent("Music", R.drawable.ic_music),
             BottomMenuContent("Profile", R.drawable.ic_profile),
-        ), modifier = Modifier.align(Alignment.BottomCenter))
+        ), modifier = Modifier.align(Alignment.BottomCenter),
+            onItemClick = { screen -> navController.navigate(screen.route)
+            })
     }
 }
 
@@ -117,6 +143,7 @@ fun HomeScreen(navController: NavHostController) {
 fun BottomMenu(
     items: List<BottomMenuContent>,
     modifier: Modifier = Modifier,
+    onItemClick: (Screen) -> Unit,
     activeHighlightColor: Color = ButtonBlue,
     activeTextColor: Color = Color.White,
     inactiveTextColor: Color = AquaBlue,
@@ -131,7 +158,7 @@ fun BottomMenu(
         modifier = modifier
             .fillMaxWidth()
             .background(DeepBlue)
-            .padding(15.dp)
+            .padding(7.dp)
     ) {
         items.forEachIndexed { index, item ->
             BottomMenuItem(
@@ -139,7 +166,17 @@ fun BottomMenu(
                 isSelected = index == selectedItemIndex,
                 activeHighlightColor = activeHighlightColor,
                 activeTextColor = activeTextColor,
-                inactiveTextColor = inactiveTextColor
+                inactiveTextColor = inactiveTextColor,
+                modifier = Modifier
+                    .clickable { val screen = when (item.title) {
+                        "Home" -> Screen.Home
+                        "Meditate" -> Screen.Meditate
+                        "Sleep" -> Screen.Sleep
+                        "Music" -> Screen.Music
+                        "Profile" -> Screen.Profile
+                        else -> Screen.Home // Default case
+                    }
+                        onItemClick(screen) }
             ) {
                 selectedItemIndex = index
             }
@@ -151,6 +188,7 @@ fun BottomMenu(
 fun BottomMenuItem(
     item: BottomMenuContent,
     isSelected: Boolean = false,
+    modifier: Modifier = Modifier,
     activeHighlightColor: Color = ButtonBlue,
     activeTextColor: Color = Color.White,
     inactiveTextColor: Color = AquaBlue,
@@ -252,7 +290,7 @@ fun CurrentMeditation(
 ) {
     val context = LocalContext.current
     var isPlaying by remember { mutableStateOf(false) }
-    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.haha) }
+    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.medi) }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -265,11 +303,11 @@ fun CurrentMeditation(
     ) {
         Column {
             Text(
-                text = "Daily Verse",
+                text = "Just Listen",
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
-                text = "Ghafir • 7-9",
+                text = "Tulia and listen, just vibe. Haina haraka",
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextWhite
             )
@@ -409,9 +447,9 @@ fun FeatureItem(feature: Feature, onFeatureClick: (Feature) -> Unit) {
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
-                    .clickable {
-                        // Handle the click
-                    }
+//                    .clickable {
+//                        // Handle the click
+//                    }
                     .align(Alignment.BottomEnd)
                     .clip(RoundedCornerShape(10.dp))
                     .background(ButtonBlue)
@@ -420,37 +458,111 @@ fun FeatureItem(feature: Feature, onFeatureClick: (Feature) -> Unit) {
         }
     }
 }
-@Composable
-fun VideoPlayer(uriString: String) {
-    val context = LocalContext.current
-    val uri = Uri.parse(uriString)
 
-    AndroidView(factory = {
-        PlayerView(context).apply {
-            player = SimpleExoPlayer.Builder(context).build().apply {
-                setMediaItem(MediaItem.fromUri(uri))
-                prepare()
-                playWhenReady = true
+@Composable
+fun VideoPlayerScreen(videoUri: Uri) {
+    // Background with rounded corners and shadow
+    var isPlaying by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.Black)
+            .shadow(8.dp, RoundedCornerShape(16.dp))
+    ) {
+        // VideoPlayer component
+        VideoPlayer(videoUri)
+
+        // Title and Description
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clip(RoundedCornerShape(topEnd = 16.dp))
+                .padding(12.dp)
+        ) {
+            Text(
+                text = "Example video",
+                //style = MaterialTheme.typography.h6.copy(color = Color.White)
+                style = MaterialTheme.typography.headlineMedium.copy(color= Color.White)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Implementing a video for the multimedia.",
+                //style = MaterialTheme.typography.body2.copy(color = Color.White)
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.White)
+            )
+        }
+
+        // Action Buttons
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            IconButton(onClick = {
+                // Handle full screen action
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic__fullscreen_24),
+                    contentDescription = "Fullscreen",
+                    tint = Color.White
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            IconButton(onClick = {
+                // Handle volume toggle action
+            }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_volume),
+                    contentDescription = "Volume",
+                    tint = Color.White
+                )
             }
         }
-    }, update = {
-        it.player?.apply {
-            setMediaItem(MediaItem.fromUri(uri))
-            prepare()
-            playWhenReady = true
-        }
-    })
+    }
+}
+
+@Composable
+fun VideoPlayer(videoUri: Uri) {
+    // Video player implementation here
+    // For example, using ExoPlayer
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .aspectRatio(16 / 9f))
+    AndroidView(
+        factory = {
+            PlayerView(it).apply {
+                player = SimpleExoPlayer.Builder(context).build().apply  {
+                    setMediaItem(MediaItem.fromUri(videoUri))
+                    prepare()
+                    playWhenReady = true
+                }
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            //.aspectRatio(16 / 9f)
+            .clip(RoundedCornerShape(10.dp))
+    )
 }
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    NavHost(navController, startDestination = "home") {
-        composable("home") { HomeScreen(navController) }
+    NavHost(navController, startDestination = Screen.Profile.route) {
+        composable(Screen.Home.route) { HomeScreen(navController) }
+        composable(Screen.Profile.route) { ProfileScreen(navController) }
         composable(
             "video/{uri}",
             arguments = listOf(navArgument("uri") { type = NavType.StringType })
         ) { backStackEntry ->
-            val uri = backStackEntry.arguments?.getString("uri") ?: ""
-            VideoPlayer(uriString = uri)
+            //val uri = backStackEntry.arguments?.getString("uri") ?: ""
+            //VideoPlayer(uriString = uri)
+            val uriString = backStackEntry.arguments?.getString("uri") ?: ""
+            // Convert the URI string to Uri
+            val uri = Uri.parse(uriString)
+            VideoPlayerScreen(uri)
         }
     }
 }

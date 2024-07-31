@@ -1,35 +1,51 @@
 package com.example.mediapp.ui.theme
 
+import android.media.MediaPlayer
+import android.net.Uri
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.widget.ConstraintLayout
-
-import com.example.mediapp.BottomMenuContent
-import com.example.mediapp.Feature
+import androidx.navigation.NavController
+import com.example.mediapp.*
 import com.example.mediapp.R
+import com.google.android.exoplayer2.upstream.RawResourceDataSource
+import com.google.android.exoplayer2.util.Log
 
-@Preview
+
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavController) {
+    val context = LocalContext.current
+    var isPlaying by remember { mutableStateOf(false) }
+    //val mediaPlayer = remember { MediaPlayer.create(context, R.raw.medi) }
+    var currentMediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+
     Box(modifier = Modifier
         .background(DeepBlue)
         .fillMaxSize()
@@ -38,7 +54,197 @@ fun ProfileScreen() {
             //IntroSection()
             //HeadSection()
             //FeatureSection()
-            profile()
+            SongsSection(songs = listOf(
+                Audios(
+                    file = R.raw.haha,
+                    title = "Haha by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = BlueViolet1,
+                    mediumColor = BlueViolet2,
+                    darkColor = BlueViolet1
+                ),
+                Audios(
+                    file = R.raw.charming,
+                    title = "Charming by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = LightGreen1,
+                    mediumColor = LightGreen2,
+                    darkColor = LightGreen3
+                ),
+                Audios(
+                    file = R.raw.setmefree,
+                    title = "Set Me Free by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = OrangeYellow1,
+                    mediumColor = OrangeYellow2,
+                    darkColor = OrangeYellow3
+                ),
+                Audios(
+                    file = R.raw.naruto,
+                    title = "Naruto by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = Beige1,
+                    mediumColor = Beige2,
+                    darkColor = Beige3
+                ),
+                Audios(
+                    file = R.raw.yesterday,
+                    title = "Yesterday by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = BlueViolet1,
+                    mediumColor = BlueViolet2,
+                    darkColor = BlueViolet3
+                ),
+                Audios(
+                    file = R.raw.charming,
+                    title = "Charming2 by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = LightGreen1,
+                    mediumColor = LightGreen2,
+                    darkColor = LightGreen3
+                ),
+                Audios(
+                    file = R.raw.medi,
+                    title = "Medi by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = Beige1,
+                    mediumColor = Beige2,
+                    darkColor = Beige3
+                ),
+                Audios(
+                    file = R.raw.naruto,
+                    title = "Naruto by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = BlueViolet1,
+                    mediumColor = BlueViolet2,
+                    darkColor = BlueViolet3
+                ),
+            ),
+                    onFeatureClick = { audio ->
+                currentMediaPlayer?.apply {
+                    if (isPlaying) {
+                        pause()
+                        //seekTo(0)
+                        currentMediaPlayer?.release()
+                    } else {
+                        //start()
+                        currentMediaPlayer?.release()
+                        currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
+                            start()
+                            setOnCompletionListener {
+                                isPlaying = false
+                            }
+                        }
+                    }
+                    isPlaying = !isPlaying
+                } ?: run {
+                    currentMediaPlayer?.release()
+                    currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
+                        start()
+                        setOnCompletionListener {
+                            isPlaying = false
+                        }
+                    }
+                    isPlaying = true
+                }
+            })
+
+            profile(audios = listOf(
+                Audios(
+                    file = R.raw.haha,
+                    title = "Haha by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = BlueViolet1,
+                    mediumColor = BlueViolet2,
+                    darkColor = BlueViolet1
+                    ),
+                Audios(
+                    file = R.raw.charming,
+                    title = "Charming by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = LightGreen1,
+                    mediumColor = LightGreen2,
+                    darkColor = LightGreen3
+                ),
+                Audios(
+                    file = R.raw.setmefree,
+                    title = "Set Me Free by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = OrangeYellow1,
+                    mediumColor = OrangeYellow2,
+                    darkColor = OrangeYellow3
+                ),
+                Audios(
+                    file = R.raw.naruto,
+                    title = "Naruto by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = Beige1,
+                    mediumColor = Beige2,
+                    darkColor = Beige3
+                ),
+                Audios(
+                    file = R.raw.yesterday,
+                    title = "Yesterday by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = BlueViolet1,
+                    mediumColor = BlueViolet2,
+                    darkColor = BlueViolet3
+                ),
+                Audios(
+                    file = R.raw.charming,
+                    title = "Charming2 by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = LightGreen1,
+                    mediumColor = LightGreen2,
+                    darkColor = LightGreen3
+                ),
+                Audios(
+                    file = R.raw.medi,
+                    title = "Medi by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = Beige1,
+                    mediumColor = Beige2,
+                    darkColor = Beige3
+                ),
+                Audios(
+                    file = R.raw.naruto,
+                    title = "Naruto by juice",
+                    iconId = R.drawable.ic_headphone,
+                    lightColor = BlueViolet1,
+                    mediumColor = BlueViolet2,
+                    darkColor = BlueViolet3
+                ),
+            ),
+                onFeatureClick = { audio ->
+                currentMediaPlayer?.apply {
+                    if (isPlaying) {
+                        pause()
+                        //seekTo(0)
+                        currentMediaPlayer?.release()
+                    } else {
+                        //start()
+                        currentMediaPlayer?.release()
+                        currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
+                            start()
+                            setOnCompletionListener {
+                                isPlaying = false
+                            }
+                        }
+                    }
+                    isPlaying = !isPlaying
+                } ?: run {
+                    currentMediaPlayer?.release()
+                    currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
+                        start()
+                        setOnCompletionListener {
+                            isPlaying = false
+                        }
+                    }
+                    isPlaying = true
+                }
+            }
+
+            )
         }
         BottomMenu(items = listOf(
             BottomMenuContent("Home", R.drawable.ic_home),
@@ -46,10 +252,171 @@ fun ProfileScreen() {
             BottomMenuContent("Sleep", R.drawable.ic_moon),
             BottomMenuContent("Music", R.drawable.ic_music),
             BottomMenuContent("Profile", R.drawable.ic_profile),
-        ), modifier = Modifier.align(Alignment.BottomCenter))
+        ), modifier = Modifier.align(Alignment.BottomCenter),
+            onItemClick = { screen -> navController.navigate(screen.route)})
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun profile(audios: List<Audios>, onFeatureClick: (Audios) -> Unit, color: Color = LightRed){
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "Songs",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(15.dp)
+        )
+        LazyVerticalGrid(
+            cells = GridCells.Fixed(2),
+            contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 100.dp),
+            modifier = Modifier.fillMaxHeight()
+        ){
+            items(audios.size) {
+                Songs(audios = audios[it], onFeatureClick = onFeatureClick)
+            }
+        }
+    }
+}
+@Composable
+fun Songs(audios: Audios, onFeatureClick: (Audios) -> Unit, color: Color = LightRed){
+    BoxWithConstraints(modifier = Modifier
+        .padding(3.dp)
+        .aspectRatio(3.7f)
+        .clip(RoundedCornerShape(10.dp))
+        .background(audios.darkColor)
+        //.clickable { onFeatureClick(audios) }
+    ) {
+        val width = constraints.maxWidth
+        val height = constraints.maxHeight
+        var isPlaying by remember { mutableStateOf(false) }
+
+        // Medium colored path
+        val mediumColoredPoint1 = Offset(0f, height * 0.3f)
+        val mediumColoredPoint2 = Offset(width * 0.1f, height * 0.35f)
+        val mediumColoredPoint3 = Offset(width * 0.4f, height * 0.05f)
+        val mediumColoredPoint4 = Offset(width * 0.75f, height * 0.7f)
+        val mediumColoredPoint5 = Offset(width * 1.4f, -height.toFloat())
+
+        val mediumColoredPath = Path().apply {
+            moveTo(mediumColoredPoint1.x, mediumColoredPoint1.y)
+            standardQuadFromTo(mediumColoredPoint1, mediumColoredPoint2)
+            standardQuadFromTo(mediumColoredPoint2, mediumColoredPoint3)
+            standardQuadFromTo(mediumColoredPoint3, mediumColoredPoint4)
+            standardQuadFromTo(mediumColoredPoint4, mediumColoredPoint5)
+            lineTo(width.toFloat() + 100f, height.toFloat() + 100f)
+            lineTo(-100f, height.toFloat() + 100f)
+            close()
+        }
+        // Light colored path
+        val lightPoint1 = Offset(0f, height * 0.35f)
+        val lightPoint2 = Offset(width * 0.1f, height * 0.4f)
+        val lightPoint3 = Offset(width * 0.3f, height * 0.35f)
+        val lightPoint4 = Offset(width * 0.65f, height.toFloat())
+        val lightPoint5 = Offset(width * 1.4f, -height.toFloat() / 3f)
+
+        val lightColoredPath = Path().apply {
+            moveTo(lightPoint1.x, lightPoint1.y)
+            standardQuadFromTo(lightPoint1, lightPoint2)
+            standardQuadFromTo(lightPoint2, lightPoint3)
+            standardQuadFromTo(lightPoint3, lightPoint4)
+            standardQuadFromTo(lightPoint4, lightPoint5)
+            lineTo(width.toFloat() + 100f, height.toFloat() + 100f)
+            lineTo(-100f, height.toFloat() + 100f)
+            close()
+        }
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            drawPath(
+                path = mediumColoredPath,
+                color = audios.mediumColor
+            )
+            drawPath(
+                path = lightColoredPath,
+                color = audios.lightColor
+            )
+        }
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(15.dp)
+//        ) {
+//            Text(
+//                text = audios.title,
+//                style = MaterialTheme.typography.headlineMedium,
+//                lineHeight = 26.sp,
+//                modifier = Modifier.align(Alignment.TopStart)
+//            )
+//            Icon(
+//                painter = painterResource(id = audios.iconId),
+//                contentDescription = audios.title,
+//                tint = Color.White,
+//                modifier = Modifier.align(Alignment.BottomStart)
+//            )
+//            Text(
+//                text = "Start",
+//                color = TextWhite,
+//                fontSize = 14.sp,
+//                fontWeight = FontWeight.Bold,
+//                modifier = Modifier
+////                    .clickable {
+////                        // Handle the click
+////                    }
+//                    .align(Alignment.BottomEnd)
+//                    .clip(RoundedCornerShape(10.dp))
+//                    .background(ButtonBlue)
+//                    .padding(vertical = 6.dp, horizontal = 15.dp)
+//            )
+//        }
+
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .padding(15.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(color)
+                .padding(horizontal = 15.dp, vertical = 15.dp)
+                .fillMaxWidth()
+        ) {
+            Column {
+                Text(
+                    text = audios.title,//"Just Listen",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+                Text(
+                    text = "Tulia, bado inaundwa. Haina haraka",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextWhite
+                )
+            }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(ButtonBlue)
+                    .padding(10.dp)
+                    .clickable {
+                        onFeatureClick(audios)
+
+                        isPlaying = !isPlaying
+                    }
+            ) {
+                Icon(
+                    //painter = painterResource( R.drawable.ic_play ),
+                    painter = painterResource(id = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play),
+                    //contentDescription = "Play",
+                    contentDescription = if (isPlaying) "Pause" else "Play",
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun HeaderSection(
@@ -158,8 +525,22 @@ fun HeadSection(
         }
     }
 //}
-
 @Composable
-fun profile(){
+fun SongsSection(songs: List<Audios>,onFeatureClick: (Audios) -> Unit,color: Color = LightRed){
+    var selectedSongIndex by remember {
+        mutableStateOf(0)
+    }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "Songs",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(5.dp)
+        )
+        LazyColumn{
+            items(songs.size) {
+                Songs(audios = songs[it], onFeatureClick = onFeatureClick)
+            }
+        }
 
+    }
 }
