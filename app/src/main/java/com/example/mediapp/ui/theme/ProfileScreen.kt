@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -49,9 +50,48 @@ fun ProfileScreen(navController: NavController) {
         .background(DeepBlue)
         .fillMaxSize()
     ) {
+        //Text("Profile here")
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            SongsSection(
-                songs = listOf(
+//            SongsSection(
+//                songs = listOf(
+//                    Audios(R.raw.haha, "Haha by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet1),
+//                    Audios(R.raw.charming, "Charming by juice", R.drawable.ic_headphone, LightGreen1, LightGreen2, LightGreen3),
+//                    Audios(R.raw.setmefree, "Set Me Free by juice", R.drawable.ic_headphone, OrangeYellow1, OrangeYellow2, OrangeYellow3),
+//                    Audios(R.raw.naruto, "Naruto by juice", R.drawable.ic_headphone, Beige1, Beige2, Beige3),
+//                    Audios(R.raw.yesterday, "Yesterday by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet3),
+//                    Audios(R.raw.charming, "Charming2 by juice", R.drawable.ic_headphone, LightGreen1, LightGreen2, LightGreen3),
+//                    Audios(R.raw.medi, "Medi by juice", R.drawable.ic_headphone, Beige1, Beige2, Beige3),
+//                    Audios(R.raw.naruto, "Naruto by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet3)
+//                ),
+//                onFeatureClick = { audio ->
+//                    currentMediaPlayer?.apply {
+//                        if (isPlaying) {
+//                            pause()
+//                            release()
+//                        } else {
+//                            release()
+//                            currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
+//                                start()
+//                                setOnCompletionListener {
+//                                    isPlaying = false
+//                                }
+//                            }
+//                        }
+//                        isPlaying = !isPlaying
+//                    } ?: run {
+//                        currentMediaPlayer?.release()
+//                        currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
+//                            start()
+//                            setOnCompletionListener {
+//                                isPlaying = false
+//                            }
+//                        }
+//                        isPlaying = true
+//                    }
+//                }
+//            )
+            ChipsSection(chips = listOf("Yasin", "Qaf", "Kahf", "Fatiha", "Falaq", "Kafirun"))
+            prof(audios = listOf(
                     Audios(R.raw.haha, "Haha by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet1),
                     Audios(R.raw.charming, "Charming by juice", R.drawable.ic_headphone, LightGreen1, LightGreen2, LightGreen3),
                     Audios(R.raw.setmefree, "Set Me Free by juice", R.drawable.ic_headphone, OrangeYellow1, OrangeYellow2, OrangeYellow3),
@@ -60,8 +100,7 @@ fun ProfileScreen(navController: NavController) {
                     Audios(R.raw.charming, "Charming2 by juice", R.drawable.ic_headphone, LightGreen1, LightGreen2, LightGreen3),
                     Audios(R.raw.medi, "Medi by juice", R.drawable.ic_headphone, Beige1, Beige2, Beige3),
                     Audios(R.raw.naruto, "Naruto by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet3)
-                ),
-                onFeatureClick = { audio ->
+                ), onFeatureClick = { audio ->
                     currentMediaPlayer?.apply {
                         if (isPlaying) {
                             pause()
@@ -86,47 +125,7 @@ fun ProfileScreen(navController: NavController) {
                         }
                         isPlaying = true
                     }
-                }
-            )
-
-            profile(
-                audios = listOf(
-                    Audios(R.raw.haha, "Haha by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet1),
-                    Audios(R.raw.charming, "Charming by juice", R.drawable.ic_headphone, LightGreen1, LightGreen2, LightGreen3),
-                    Audios(R.raw.setmefree, "Set Me Free by juice", R.drawable.ic_headphone, OrangeYellow1, OrangeYellow2, OrangeYellow3),
-                    Audios(R.raw.naruto, "Naruto by juice", R.drawable.ic_headphone, Beige1, Beige2, Beige3),
-                    Audios(R.raw.yesterday, "Yesterday by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet3),
-                    Audios(R.raw.charming, "Charming2 by juice", R.drawable.ic_headphone, LightGreen1, LightGreen2, LightGreen3),
-                    Audios(R.raw.medi, "Medi by juice", R.drawable.ic_headphone, Beige1, Beige2, Beige3),
-                    Audios(R.raw.naruto, "Naruto by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet3)
-                ),
-                onFeatureClick = { audio ->
-                    currentMediaPlayer?.apply {
-                        if (isPlaying) {
-                            pause()
-                            release()
-                        } else {
-                            release()
-                            currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
-                                start()
-                                setOnCompletionListener {
-                                    isPlaying = false
-                                }
-                            }
-                        }
-                        isPlaying = !isPlaying
-                    } ?: run {
-                        currentMediaPlayer?.release()
-                        currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
-                            start()
-                            setOnCompletionListener {
-                                isPlaying = false
-                            }
-                        }
-                        isPlaying = true
-                    }
-                }
-            )
+                })
         }
 
         BottomMenu(
@@ -150,21 +149,35 @@ fun ProfileScreen(navController: NavController) {
 }
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun profile(audios: List<Audios>, onFeatureClick: (Audios) -> Unit, color: Color = LightRed) {
+fun prof(audios: List<Audios>, onFeatureClick: (Audios) -> Unit, color: Color = LightRed) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "Songs",
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(15.dp)
+            modifier = Modifier.padding(10.dp)
         )
-        LazyVerticalGrid(
-            cells = GridCells.Fixed(2),
-            contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 100.dp),
-            modifier = Modifier.fillMaxHeight()
-        ) {
-            items(audios.size) {
-                Songs(audios = audios[it], onFeatureClick = onFeatureClick)
-            }
+//        LazyColumn{
+//            items(audios.size) {
+//                //Songs(audios = audios[it], onFeatureClick = onFeatureClick)
+//                Text(
+//                    text = "Songs",
+//                    style = MaterialTheme.typography.headlineLarge,
+//                    modifier = Modifier.padding(10.dp)
+//                )
+//            }
+//        }
+        
+//        LazyVerticalGrid(
+//            cells = GridCells.Fixed(2),
+//            contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 100.dp),
+//            modifier = Modifier.fillMaxHeight()
+//        ) {
+//            items(audios.size) {
+//                Songs(audios = audios[it], onFeatureClick = onFeatureClick)
+//            }
+//        }
+        for (item: Audios in audios) {
+            Songs(audios = item, onFeatureClick = onFeatureClick)
         }
     }
 }
@@ -308,7 +321,34 @@ fun Songs(audios: Audios, onFeatureClick: (Audios) -> Unit, color: Color = Light
         }
     }
 }
-
+@Composable
+fun ChipsSection(
+    chips: List<String>
+) {
+    var selectedChipIndex by remember {
+        mutableStateOf(0)
+    }
+    LazyRow {
+        items(chips.size) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .padding(start = 10.dp, top = 10.dp, bottom = 10.dp)
+                    .clickable {
+                        selectedChipIndex = it
+                    }
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        if (selectedChipIndex == it) ButtonBlue
+                        else DarkerButtonBlue
+                    )
+                    .padding(10.dp)
+            ) {
+                Text(text = chips[it], color = TextWhite)
+            }
+        }
+    }
+}
 @Composable
 fun HeaderSection(
 ){
