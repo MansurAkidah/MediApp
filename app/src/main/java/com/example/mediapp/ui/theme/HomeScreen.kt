@@ -15,6 +15,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyRow
@@ -39,6 +40,9 @@ import androidx.navigation.ActivityNavigator
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+//import androidx.navigation.compose.composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.Composable
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
@@ -55,6 +59,8 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Log
+import java.util.*
+import kotlin.concurrent.timer
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -72,11 +78,18 @@ fun HomeScreen(navController: NavHostController) {
             CurrentMeditation()
             FeatureSection(features = listOf(
                 Feature(
-                    title = "Sleep meditation",
+                    title = "Morning Dua",
                     R.drawable.ic_headphone,
                     BlueViolet1,
                     BlueViolet2,
                     BlueViolet3
+                ),
+                Feature(
+                    title = "Evening Dua",
+                    R.drawable.ic_headphone,
+                    OrangeYellow1,
+                    OrangeYellow2,
+                    OrangeYellow3
                 ),
                 Feature(
                     title = "Tips for beginners",
@@ -86,14 +99,7 @@ fun HomeScreen(navController: NavHostController) {
                     LightGreen3
                 ),
                 Feature(
-                    title = "Night island",
-                    R.drawable.ic_headphone,
-                    OrangeYellow1,
-                    OrangeYellow2,
-                    OrangeYellow3
-                ),
-                Feature(
-                    title = "Calming sounds",
+                    title = "Quran",
                     R.drawable.ic_headphone,
                     Beige1,
                     Beige2,
@@ -107,7 +113,7 @@ fun HomeScreen(navController: NavHostController) {
                         Log.d("HomeScreen", "Navigating to video URI: $rawResourceUri")
                         navController.navigate("video/${Uri.encode(rawResourceUri.toString())}")
                     }
-                    if (feature.title == "Sleep meditation") {
+                    if (feature.title == "Morning Dua") {
                         if (isPlaying) {
                             mediaPlayer.pause()
                             mediaPlayer.seekTo(0)
@@ -116,14 +122,9 @@ fun HomeScreen(navController: NavHostController) {
                         }
                         isPlaying = !isPlaying
                     }
-                    if (feature.title == "Calming sounds") {
-                        if (isPlaying) {
-                            mediaPlayer.pause()
-                            mediaPlayer.seekTo(0)
-                        } else {
-                            mediaPlayer.start()
-                        }
-                        isPlaying = !isPlaying
+                    if (feature.title == "Quran") {
+                        Log.d("ProfileScreen", "Navigating to profile screen")
+                        navController.navigate("Profile")
                     }
                 })
         }
@@ -134,7 +135,15 @@ fun HomeScreen(navController: NavHostController) {
             BottomMenuContent("Music", R.drawable.ic_music),
             BottomMenuContent("Profile", R.drawable.ic_profile),
         ), modifier = Modifier.align(Alignment.BottomCenter),
-            onItemClick = { screen -> navController.navigate(screen.route)
+            onItemClick = { screen ->
+                if(screen.route == "Profile"){
+                    Log.d("ProfileScreen", "Navigating to profile screen")
+                    navController.navigate("Profile")
+                }
+                if(screen.route == "Music"){
+                    Log.d("ProfileScreen", "Navigating to music screen")
+                    navController.navigate(Screen.Music.route)
+                }
             })
     }
 }
@@ -167,8 +176,22 @@ fun BottomMenu(
                 activeHighlightColor = activeHighlightColor,
                 activeTextColor = activeTextColor,
                 inactiveTextColor = inactiveTextColor,
-                modifier = Modifier
-                    .clickable { val screen = when (item.title) {
+//                modifier = Modifier
+//                    .clickable { val screen = when (item.title) {
+//                        "Home" -> Screen.Home
+//                        "Meditate" -> Screen.Meditate
+//                        "Sleep" -> Screen.Sleep
+//                        "Music" -> Screen.Music
+//                        "Profile" -> Screen.Profile
+//                        else -> Screen.Home // Default case
+//                    }
+//                        onItemClick(screen) }
+//            ) {
+//                selectedItemIndex = index
+//            }
+                onItemClick = {
+                    selectedItemIndex = index
+                    val screen = when (item.title) {
                         "Home" -> Screen.Home
                         "Meditate" -> Screen.Meditate
                         "Sleep" -> Screen.Sleep
@@ -176,10 +199,9 @@ fun BottomMenu(
                         "Profile" -> Screen.Profile
                         else -> Screen.Home // Default case
                     }
-                        onItemClick(screen) }
-            ) {
-                selectedItemIndex = index
-            }
+                    onItemClick(screen)
+                }
+            )
         }
     }
 }
@@ -224,8 +246,14 @@ fun BottomMenuItem(
 
 @Composable
 fun GreetingSection(
-    name: String = "Mans"
+    name: String = "Akidah"
 ) {
+    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+    val greeting = when (currentHour) {
+        in 0..11 -> "صباح الخير"
+        in 12..17 -> "مساء الخير"
+        else -> "مساء الخير"
+    }
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -241,7 +269,7 @@ fun GreetingSection(
                 style = MaterialTheme.typography.headlineLarge
             )
             Text(
-                text = "We wish you have a good day!",
+                text = greeting,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -550,17 +578,13 @@ fun VideoPlayer(videoUri: Uri) {
 }
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    NavHost(navController, startDestination = Screen.Profile.route) {
+    NavHost(navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) { HomeScreen(navController) }
         composable(Screen.Profile.route) { ProfileScreen(navController) }
-        composable(
-            "video/{uri}",
-            arguments = listOf(navArgument("uri") { type = NavType.StringType })
-        ) { backStackEntry ->
-            //val uri = backStackEntry.arguments?.getString("uri") ?: ""
-            //VideoPlayer(uriString = uri)
+        composable("Profile") { ProfileScreen(navController) }
+        composable(Screen.Video.route, arguments = listOf(navArgument("uri")
+            { type = NavType.StringType })) { backStackEntry ->
             val uriString = backStackEntry.arguments?.getString("uri") ?: ""
-            // Convert the URI string to Uri
             val uri = Uri.parse(uriString)
             VideoPlayerScreen(uri)
         }

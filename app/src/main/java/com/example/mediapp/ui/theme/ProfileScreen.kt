@@ -3,6 +3,7 @@ package com.example.mediapp.ui.theme
 import android.media.MediaPlayer
 import android.net.Uri
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,191 +39,44 @@ import com.example.mediapp.R
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Log
 
-
 @Composable
 fun ProfileScreen(navController: NavController) {
     val context = LocalContext.current
     var isPlaying by remember { mutableStateOf(false) }
-    //val mediaPlayer = remember { MediaPlayer.create(context, R.raw.medi) }
     var currentMediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
 
     Box(modifier = Modifier
         .background(DeepBlue)
         .fillMaxSize()
-    ){
-        Column {
-            //IntroSection()
-            //HeadSection()
-            //FeatureSection()
-            SongsSection(songs = listOf(
-                Audios(
-                    file = R.raw.haha,
-                    title = "Haha by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = BlueViolet1,
-                    mediumColor = BlueViolet2,
-                    darkColor = BlueViolet1
+    ) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            SongsSection(
+                songs = listOf(
+                    Audios(R.raw.haha, "Haha by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet1),
+                    Audios(R.raw.charming, "Charming by juice", R.drawable.ic_headphone, LightGreen1, LightGreen2, LightGreen3),
+                    Audios(R.raw.setmefree, "Set Me Free by juice", R.drawable.ic_headphone, OrangeYellow1, OrangeYellow2, OrangeYellow3),
+                    Audios(R.raw.naruto, "Naruto by juice", R.drawable.ic_headphone, Beige1, Beige2, Beige3),
+                    Audios(R.raw.yesterday, "Yesterday by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet3),
+                    Audios(R.raw.charming, "Charming2 by juice", R.drawable.ic_headphone, LightGreen1, LightGreen2, LightGreen3),
+                    Audios(R.raw.medi, "Medi by juice", R.drawable.ic_headphone, Beige1, Beige2, Beige3),
+                    Audios(R.raw.naruto, "Naruto by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet3)
                 ),
-                Audios(
-                    file = R.raw.charming,
-                    title = "Charming by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = LightGreen1,
-                    mediumColor = LightGreen2,
-                    darkColor = LightGreen3
-                ),
-                Audios(
-                    file = R.raw.setmefree,
-                    title = "Set Me Free by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = OrangeYellow1,
-                    mediumColor = OrangeYellow2,
-                    darkColor = OrangeYellow3
-                ),
-                Audios(
-                    file = R.raw.naruto,
-                    title = "Naruto by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = Beige1,
-                    mediumColor = Beige2,
-                    darkColor = Beige3
-                ),
-                Audios(
-                    file = R.raw.yesterday,
-                    title = "Yesterday by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = BlueViolet1,
-                    mediumColor = BlueViolet2,
-                    darkColor = BlueViolet3
-                ),
-                Audios(
-                    file = R.raw.charming,
-                    title = "Charming2 by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = LightGreen1,
-                    mediumColor = LightGreen2,
-                    darkColor = LightGreen3
-                ),
-                Audios(
-                    file = R.raw.medi,
-                    title = "Medi by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = Beige1,
-                    mediumColor = Beige2,
-                    darkColor = Beige3
-                ),
-                Audios(
-                    file = R.raw.naruto,
-                    title = "Naruto by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = BlueViolet1,
-                    mediumColor = BlueViolet2,
-                    darkColor = BlueViolet3
-                ),
-            ),
-                    onFeatureClick = { audio ->
-                currentMediaPlayer?.apply {
-                    if (isPlaying) {
-                        pause()
-                        //seekTo(0)
-                        currentMediaPlayer?.release()
-                    } else {
-                        //start()
-                        currentMediaPlayer?.release()
-                        currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
-                            start()
-                            setOnCompletionListener {
-                                isPlaying = false
-                            }
-                        }
-                    }
-                    isPlaying = !isPlaying
-                } ?: run {
-                    currentMediaPlayer?.release()
-                    currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
-                        start()
-                        setOnCompletionListener {
-                            isPlaying = false
-                        }
-                    }
-                    isPlaying = true
-                }
-            })
-
-            profile(audios = listOf(
-                Audios(
-                    file = R.raw.haha,
-                    title = "Haha by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = BlueViolet1,
-                    mediumColor = BlueViolet2,
-                    darkColor = BlueViolet1
-                    ),
-                Audios(
-                    file = R.raw.charming,
-                    title = "Charming by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = LightGreen1,
-                    mediumColor = LightGreen2,
-                    darkColor = LightGreen3
-                ),
-                Audios(
-                    file = R.raw.setmefree,
-                    title = "Set Me Free by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = OrangeYellow1,
-                    mediumColor = OrangeYellow2,
-                    darkColor = OrangeYellow3
-                ),
-                Audios(
-                    file = R.raw.naruto,
-                    title = "Naruto by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = Beige1,
-                    mediumColor = Beige2,
-                    darkColor = Beige3
-                ),
-                Audios(
-                    file = R.raw.yesterday,
-                    title = "Yesterday by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = BlueViolet1,
-                    mediumColor = BlueViolet2,
-                    darkColor = BlueViolet3
-                ),
-                Audios(
-                    file = R.raw.charming,
-                    title = "Charming2 by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = LightGreen1,
-                    mediumColor = LightGreen2,
-                    darkColor = LightGreen3
-                ),
-                Audios(
-                    file = R.raw.medi,
-                    title = "Medi by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = Beige1,
-                    mediumColor = Beige2,
-                    darkColor = Beige3
-                ),
-                Audios(
-                    file = R.raw.naruto,
-                    title = "Naruto by juice",
-                    iconId = R.drawable.ic_headphone,
-                    lightColor = BlueViolet1,
-                    mediumColor = BlueViolet2,
-                    darkColor = BlueViolet3
-                ),
-            ),
                 onFeatureClick = { audio ->
-                currentMediaPlayer?.apply {
-                    if (isPlaying) {
-                        pause()
-                        //seekTo(0)
-                        currentMediaPlayer?.release()
-                    } else {
-                        //start()
+                    currentMediaPlayer?.apply {
+                        if (isPlaying) {
+                            pause()
+                            release()
+                        } else {
+                            release()
+                            currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
+                                start()
+                                setOnCompletionListener {
+                                    isPlaying = false
+                                }
+                            }
+                        }
+                        isPlaying = !isPlaying
+                    } ?: run {
                         currentMediaPlayer?.release()
                         currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
                             start()
@@ -230,36 +84,73 @@ fun ProfileScreen(navController: NavController) {
                                 isPlaying = false
                             }
                         }
+                        isPlaying = true
                     }
-                    isPlaying = !isPlaying
-                } ?: run {
-                    currentMediaPlayer?.release()
-                    currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
-                        start()
-                        setOnCompletionListener {
-                            isPlaying = false
-                        }
-                    }
-                    isPlaying = true
                 }
-            }
+            )
 
+            profile(
+                audios = listOf(
+                    Audios(R.raw.haha, "Haha by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet1),
+                    Audios(R.raw.charming, "Charming by juice", R.drawable.ic_headphone, LightGreen1, LightGreen2, LightGreen3),
+                    Audios(R.raw.setmefree, "Set Me Free by juice", R.drawable.ic_headphone, OrangeYellow1, OrangeYellow2, OrangeYellow3),
+                    Audios(R.raw.naruto, "Naruto by juice", R.drawable.ic_headphone, Beige1, Beige2, Beige3),
+                    Audios(R.raw.yesterday, "Yesterday by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet3),
+                    Audios(R.raw.charming, "Charming2 by juice", R.drawable.ic_headphone, LightGreen1, LightGreen2, LightGreen3),
+                    Audios(R.raw.medi, "Medi by juice", R.drawable.ic_headphone, Beige1, Beige2, Beige3),
+                    Audios(R.raw.naruto, "Naruto by juice", R.drawable.ic_headphone, BlueViolet1, BlueViolet2, BlueViolet3)
+                ),
+                onFeatureClick = { audio ->
+                    currentMediaPlayer?.apply {
+                        if (isPlaying) {
+                            pause()
+                            release()
+                        } else {
+                            release()
+                            currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
+                                start()
+                                setOnCompletionListener {
+                                    isPlaying = false
+                                }
+                            }
+                        }
+                        isPlaying = !isPlaying
+                    } ?: run {
+                        currentMediaPlayer?.release()
+                        currentMediaPlayer = MediaPlayer.create(context, audio.file).apply {
+                            start()
+                            setOnCompletionListener {
+                                isPlaying = false
+                            }
+                        }
+                        isPlaying = true
+                    }
+                }
             )
         }
-        BottomMenu(items = listOf(
-            BottomMenuContent("Home", R.drawable.ic_home),
-            BottomMenuContent("Meditate", R.drawable.ic_bubble),
-            BottomMenuContent("Sleep", R.drawable.ic_moon),
-            BottomMenuContent("Music", R.drawable.ic_music),
-            BottomMenuContent("Profile", R.drawable.ic_profile),
-        ), modifier = Modifier.align(Alignment.BottomCenter),
-            onItemClick = { screen -> navController.navigate(screen.route)})
+
+        BottomMenu(
+            items = listOf(
+                BottomMenuContent("Home", R.drawable.ic_home),
+                BottomMenuContent("Meditate", R.drawable.ic_bubble),
+                BottomMenuContent("Sleep", R.drawable.ic_moon),
+                BottomMenuContent("Music", R.drawable.ic_music),
+                BottomMenuContent("Profile", R.drawable.ic_profile)
+            ),
+            modifier = Modifier.align(Alignment.BottomCenter),
+            onItemClick = { screen -> navController.navigate(screen.route) }
+        )
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            currentMediaPlayer?.release()
+        }
     }
 }
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun profile(audios: List<Audios>, onFeatureClick: (Audios) -> Unit, color: Color = LightRed){
+fun profile(audios: List<Audios>, onFeatureClick: (Audios) -> Unit, color: Color = LightRed) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "Songs",
@@ -270,7 +161,7 @@ fun profile(audios: List<Audios>, onFeatureClick: (Audios) -> Unit, color: Color
             cells = GridCells.Fixed(2),
             contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 100.dp),
             modifier = Modifier.fillMaxHeight()
-        ){
+        ) {
             items(audios.size) {
                 Songs(audios = audios[it], onFeatureClick = onFeatureClick)
             }
