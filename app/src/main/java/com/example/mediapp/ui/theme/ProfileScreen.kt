@@ -1,7 +1,10 @@
 package com.example.mediapp.ui.theme
 
+import android.content.Context
+import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
+import android.provider.MediaStore
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
@@ -39,6 +42,7 @@ import com.example.mediapp.*
 import com.example.mediapp.R
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Log
+import java.util.ArrayList
 
 @Composable
 fun ProfileScreen(navController: NavController) {
@@ -126,6 +130,15 @@ fun ProfileScreen(navController: NavController) {
                         isPlaying = true
                     }
                 })
+            Text(
+                text = "Sings from phone",
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(10.dp)
+            )
+            SongsFromPhone(onSongsClick = { audio ->
+
+            })
+
         }
 
         BottomMenu(
@@ -180,6 +193,59 @@ fun prof(audios: List<Audios>, onFeatureClick: (Audios) -> Unit, color: Color = 
             Songs(audios = item, onFeatureClick = onFeatureClick)
         }
     }
+}
+
+@Composable
+fun SongsFromPhone(onSongsClick: (AudioModel) -> Unit){
+    val context = LocalContext.current
+    val songList = getAudiosFromDevice(context)
+
+    LazyColumn {
+        items(songList ?: emptyList()) { song ->
+            song.getaName()?.let { Text(text = it) }  // Display the song name
+            // Handle the click event
+//            Modifier.clickable {
+//                onSongsClick(song)
+//            }
+        }
+    }
+}
+
+
+fun getAudiosFromDevice(context: Context): List<AudioModel>? {
+    val tempAudioList: MutableList<AudioModel> = ArrayList()
+    val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+    val projection = arrayOf(
+        MediaStore.Audio.AudioColumns.DATA,
+        MediaStore.Audio.AudioColumns.TITLE,
+        MediaStore.Audio.AudioColumns.ALBUM,
+        MediaStore.Audio.ArtistColumns.ARTIST
+    )
+    val c: Cursor? = context.contentResolver.query(
+        uri,
+        projection,
+        MediaStore.Audio.Media.DATA + " like ? ",
+        arrayOf("%utm%"),
+        null
+    )
+    if (c != null) {
+        while (c.moveToNext()) {
+            val audioModel = AudioModel()
+            val path: String = c.getString(0)
+            val name: String = c.getString(1)
+            val album: String = c.getString(2)
+            val artist: String = c.getString(3)
+            audioModel.setaName(name)
+            audioModel.setaAlbum(album)
+            audioModel.setaArtist(artist)
+            audioModel.setaPath(path)
+            Log.e("Name :$name", " Album :$album")
+            Log.e("Path :$path", " Artist :$artist")
+            tempAudioList.add(audioModel)
+        }
+        c.close()
+    }
+    return tempAudioList
 }
 @Composable
 fun Songs(audios: Audios, onFeatureClick: (Audios) -> Unit, color: Color = LightRed){

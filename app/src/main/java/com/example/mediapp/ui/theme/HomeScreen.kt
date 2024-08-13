@@ -1,21 +1,19 @@
 package com.example.mediapp.ui.theme
 
+//import androidx.navigation.compose.composable
+//import com.example.mediapp.BottomMenuContent
+//import com.example.mediapp.Feature
+//import com.example.mediapp.standardQuadFromTo
+
 import android.content.Context
+import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-
+import android.provider.MediaStore
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyRow
@@ -24,7 +22,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -36,31 +38,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.navigation.ActivityNavigator
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-//import androidx.navigation.compose.composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.Composable
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mediapp.*
 import com.example.mediapp.R
-//import com.example.mediapp.BottomMenuContent
-//import com.example.mediapp.Feature
-//import com.example.mediapp.standardQuadFromTo
 import com.example.mediapp.ui.theme.*
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Log
 import java.util.*
-import kotlin.concurrent.timer
+
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -138,7 +130,8 @@ fun HomeScreen(navController: NavHostController) {
             onItemClick = { screen ->
                 if(screen.route == "Profile"){
                     Log.d("ProfileScreen", "Navigating to profile screen")
-                    navController.navigate("Profile")
+                    //navController.navigate("Profile")
+                    navController.navigate(Screen.Profile.route)
                 }
                 if(screen.route == "Music"){
                     Log.d("ProfileScreen", "Navigating to music screen")
@@ -227,7 +220,8 @@ fun BottomMenuItem(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(if (isSelected) activeHighlightColor else Color.Transparent)
+                .background(Color.Transparent)
+//                .background(if (isSelected) activeHighlightColor else Color.Transparent)
                 .padding(10.dp)
         ) {
             Icon(
@@ -580,6 +574,7 @@ fun VideoPlayer(videoUri: Uri) {
 fun AppNavigation(navController: NavHostController) {
     NavHost(navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) { HomeScreen(navController) }
+        composable(Screen.Music.route) { MusicScreen(navController) }
         composable(Screen.Profile.route) { ProfileScreen(navController) }
         composable("Profile") { ProfileScreen(navController) }
         composable(Screen.Video.route, arguments = listOf(navArgument("uri")
@@ -590,3 +585,4 @@ fun AppNavigation(navController: NavHostController) {
         }
     }
 }
+
